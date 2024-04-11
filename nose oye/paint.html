@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paint en p5.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+<body>
+   
+    <input type="range" min="1" max="20" value="5" id="brushSizeSlider">
+    <input type="range" min="0" max="255" value="0" id="redSlider">
+    <input type="range" min="0" max="255" value="0" id="greenSlider">
+    <input type="range" min="0" max="255" value="0" id="blueSlider">
+    <script src="/socket.io/socket.io.js"></script>
+    
+   
+    <script>
+        const socket = io();
+        let brushSizeSlider; 
+        let redSlider, greenSlider, blueSlider; 
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            background(255);
+            brushSizeSlider = document.getElementById("brushSizeSlider");
+            redSlider = document.getElementById("redSlider");
+            greenSlider = document.getElementById("greenSlider");
+            blueSlider = document.getElementById("blueSlider");
+        }
+
+        function draw() {
+            let brushSize = brushSizeSlider.value; 
+            let r = redSlider.value;
+            let g = greenSlider.value;
+            let b = blueSlider.value;
+            if (mouseIsPressed) {
+                stroke(r, g, b);
+                strokeWeight(brushSize);
+                point(mouseX, mouseY);
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+        function draw(){
+            if(mouseIsPressed){
+                const datos = {
+                    x: mouseX,
+                    y: mouseY
+                }
+
+            socket.emit("paint", datos)
+            }
+        }
+        socket.on("paint",(datos) =>{
+            ellipse(datos.x, datos.y, 20);
+        })
+    </script>
+</body>
+</html>
+
+
+
